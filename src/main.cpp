@@ -34,7 +34,7 @@ int main()
 
   PID pid;
   // TODO: Initialize the pid variable.
-  pid.Init(0.2, 0.004, 3.0);
+  pid.Init(0.15, 0.0008, 2.5);
 
   h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
@@ -66,11 +66,16 @@ int main()
 
           // DEBUG
           std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
-          double tmin = 0.4; // Set to 0.3 for Hilly track
-          double throttle = fmax(tmin, -0.15/0.05 * fabs(steer_value) + 0.35);
+
+          //Adjust throttle based on desired speed and Error/ steer angle
+          double throttle = (60.0-speed)*0.2 - 4.0*fabs(cte);
+          throttle = pid.filter(throttle);
+          throttle = fmin(fmax(throttle,0.01),0.7);
+          
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = throttle;
+          msgJson["throttle"] = 0.35; //Use throttle for variable throttle
+          msgJson["speed"] = speed;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);

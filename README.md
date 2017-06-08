@@ -2,7 +2,42 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Problem Statement
+Implemented a PID controller in C++ to maneuver the car around a race track.
 
+## PID controller
+Udacity's simulator provides the cross track error (CTE) and speed. The CTE is used as input to the PID control which controls the steering angle of the vehicle.
+
+A proportional–integral–derivative controller (PID controller) is a control loop feedback mechanism that continuously calculates an error value as the difference between a desired state and true state and applies a correction based on proportional (P), integral (I), and derivative (D) error terms. The control control variable is set as a sum of the three error terms multiplied by scalar constants. The proportional term increases action in relation on the error and drives the error to zero, but leads to oscillations if the magnitude of error is large. The differential term is introduced to reduce the oscillations. The integral term increases action in relation to the error and also how long it has persisted.
+
+## Controlling Steering angle
+The steering angle is calculated as a function of CTE as:
+
+steer_value = -Kp.cte - Ki.int_cte - Kd.diff_cte
+
+The error coefficients (Kp, Ki, Kd) were tuned manually stating from the values used in the lessons. The coefficients are set as Kp=0.15, Ki=0.0008, Kd=2.5.
+A large value of Kp causes the steering angle to oscillate. Kp and Kd together largely contribute to the smooth and steady steering response.
+
+The steering angle is further filtered using an Exponential Moving Average filter:
+
+steer_ang_filt = (1-alpha).steer_value + alpha.prev_steer_filt
+
+Where alpha, the filter coefficient is set to 0.05.
+
+With constant throttle of 0.35, and the coefficients as described above, the car drives very well around the race track.
+
+**With Constant throttle:**
+
+[![Constant Throttle](http://img.youtube.com/vi/eObcKcxbo48/0.jpg)](http://www.youtube.com/watch?v=eObcKcxbo48)
+
+### Variable Throttle
+Using constant throttle drives around the race track at a conservative speed (<40mph). By tuning the throttle based on the desired speed and CTE, the car drives faster when the conditions are favorable.
+
+**With Variable throttle:**
+
+[![Variable Throttle](http://img.youtube.com/vi/lRloj9aGICY/0.jpg)](http://www.youtube.com/watch?v=lRloj9aGICY)
+
+---
 ## Dependencies
 
 * cmake >= 3.5
@@ -19,7 +54,7 @@ Self-Driving Car Engineer Nanodegree Program
   * Run either `./install-mac.sh` or `./install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
@@ -31,7 +66,7 @@ Self-Driving Car Engineer Nanodegree Program
 1. Clone this repo.
 2. Make a build directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
-4. Run it: `./pid`. 
+4. Run it: `./pid`.
 
 ## Editor Settings
 
